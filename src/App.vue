@@ -34,6 +34,6 @@ import GlobalToast from './components/GlobalToast.vue';
 
 const route = useRoute();
 const isAuthenticated = computed(() => !!store.token);
-const currentPageTitle = computed(() => route.meta.title || 'LoyaltyPlus');
+const currentPageTitle = computed(() => route.meta.title || 'PresenceApp');
 
 </script>

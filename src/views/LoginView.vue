@@ -47,7 +47,7 @@
                 </div>
 
                 <!-- Remember / Forgot -->
-                <div class="d-flex justify-content-between align-items-center gap-2 mt-3 mb-4">
+                <!-- <div class="d-flex justify-content-between align-items-center gap-2 mt-3 mb-4">
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="remember" name="remember">
                         <label class="form-check-label" for="remember">
@@ -58,11 +58,11 @@
                     <a href="/forgot-password" class="forgot-link">
                         Lupa password?
                     </a>
-                </div>
+                </div> -->
 
                 <!-- Login -->
                 <button type="submit" class="btn btn-login w-100" id="loginButton">
-                    <span id="loginButtonText">Masuk</span>
+                    <span id="loginButtonText">{{btnLoginLabel}}</span>
                     <i class="bi bi-arrow-right ms-2"></i>
                 </button>
 
@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { store } from '../store/store';
 import api from '../service/api.js';
@@ -98,28 +98,33 @@ const identity = ref('');
 const password = ref('');
 const isTogglePassword = ref(false)
 const router = useRouter();
+const isLoading = ref(false)
+const btnLoginLabel = computed(() => isLoading.value ? 'Silahkan Tunggu...' : 'Masuk')
+
 
 const handleLogin = async () => {
-  if (identity.value && password.value) {
+  if (!identity.value || !password.value) return
 
-    try {
-        const {data} = await api.post('/login', {
-            username: identity.value,
-            password: password.value,
-        })
-    
-        store.token = data.data.token;
-        store.user = data.data.employee
-        localStorage.setItem('lp_token', store.token);
-        store.showToast('Login berhasil!');
-        router.push('/home');
-        
-    } catch (error) {
+  isLoading.value = true
+  try {
+      const {data} = await api.post('/login', {
+          username: identity.value,
+          password: password.value,
+      })
+  
+      store.token = data.data.token;
+      store.user = data.data.employee
+      localStorage.setItem('lp_token', store.token);
+      store.showToast('Login berhasil!');
+      isLoading.value = false
+      router.push('/home');
+      
+  } catch (error) {
 
-        console.error(error)
-        store.showToast('Login gagal! ', 'error');
-        
-    }
+      console.error(error)
+      isLoading.value = false
+      store.showToast('Login gagal! ', 'error');
+      
   }
 };
 
