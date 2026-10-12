@@ -39,7 +39,9 @@ router.beforeEach(async (to, from, next) => {
             const {data} = await api.get('/profile')
             store.user = data.data
         } catch (error) {
-            console.log(error)
+            store.user = null
+            store.token = null
+            localStorage.removeItem('lp_token')
             next('/login');
         }
     }
